@@ -1,0 +1,211 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Approvisionnements{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold">Gestion des Approvisionnements</h4>
+        <a href="#" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i> Nouvel approvisionnement
+        </a>
+    </div>
+
+    <!-- FILTRES -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h6 class="fw-bold mb-3">Filtres et recherche</h6>
+
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <input type="text" name="search" class="form-control" placeholder="Rechercher...">
+                </div>
+
+                <div class="col-md-3">
+                    <select name="fournisseur" class="form-select">
+                        <option value="">Tous les fournisseurs</option>
+                        {% for fournisseur in fournisseurs %}
+                            <option value="{{ fournisseur.id }}">{{ fournisseur.nom }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <select name="article" class="form-select">
+                        <option value="">Tous les articles</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button class="btn btn-primary">
+                        <i class="bi bi-funnel"></i> Filtrer
+                    </button>
+                </div>
+                <div class="col-md-2 d-flex flex-row">
+                    <label class="form-label mb-1">Du</label>
+                    <input type="date" name="date_debut" class="form-control">
+                </div>
+
+                <div class="col-md-2 d-flex flex-row">
+                    <label class="form-label mb-1">Au</label>
+                    <input type="date" name="date_fin" class="form-control">
+                </div>
+
+                <div class="col-md-3 d-flex flex-row">
+                <label class="form-label mb-1">Date</label>
+                <select name="" class="form-select">
+                    <option value="">Récent → Ancien</option>
+                    <option value="">Ancien → Récent</option>
+                </select>
+            </div>
+              <div class="col-md-2 d-flex flex-column">
+                <a href="{{ path('approvisionnement_index') }}"
+                   class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-counterclockwise"></i> Réinitialiser
+                </a>
+            </div>   
+            </form>
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th>Référence</th>
+                    <th>Date</th>
+                    <th>Fournisseur</th>
+                    <th>Articles</th>
+                    <th>Montant total</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for appro in approvisionnements %}
+                    <tr>
+                        <td>{{ appro.reference }}</td>
+                        <td>{{ appro.date|date('d/m/Y') }}</td>
+                        <td>{{ appro.fournisseur.nom }}</td>
+
+                        <td>
+                            <span class="badge bg-info">
+                                {{ appro.ligneAppros|length }} articles
+                            </span>
+                        </td>
+
+                        <td class="fw-bold">
+                            {{ appro.total|number_format(0, ' ', ' ') }} FCFA
+                        </td>
+
+                        <td>
+                            {% if appro.statut == 'RECU' %}
+                                <span class="badge bg-success">Reçu</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">En attente</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <div class="btn-group">
+                                <a href="#" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-eye"></i> 
+                                </a>
+                                <a href="#" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i> 
+                                </a>
+                                <a href="#" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-trash"></i> 
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">
+                            Aucun approvisionnement trouvé
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% if nbrePage > 0 %}
+    {# On récupère tous les paramètres GET actuels #}
+    {% set routeParams = app.request.query.all %}
+
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+
+            {# Bouton Précédent #}
+            <li class="page-item {{ pageEncours <= 1 ? 'disabled' }}">
+                <a class="page-link" 
+                   href="{{ pageEncours > 1 ? path('approvisionnement_index', routeParams|merge({'page': pageEncours - 1})) : '#' }}" 
+                   tabindex="-1" aria-disabled="true">
+                   Précédent
+                </a>
+            </li>
+
+            {# Pages numérotées #}
+            {% for index in 1..nbrePage %}
+                <li class="page-item {{ pageEncours == index ? 'active' }}">
+                    <a class="page-link" href="{{ path('approvisionnement_index', routeParams|merge({'page': index})) }}">{{ index }}</a>
+                </li>
+            {% endfor %}
+
+            {# Bouton Suivant #}
+            <li class="page-item {{ pageEncours >= nbrePage ? 'disabled' }}">
+                <a class="page-link" 
+                   href="{{ pageEncours < nbrePage ? path('approvisionnement_index', routeParams|merge({'page': pageEncours + 1})) : '#' }}">
+                   Suivant
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+{% endif %}
+
+
+
+    <!-- STATISTIQUES -->
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6>Total des approvisionnements</h6>
+                    <h4 class="text-primary fw-bold">
+                        {{ totalMontant|number_format(0, ' ', ' ') }} FCFA
+                    </h4>
+                    <small class="text-muted">Période : {{ periode }}</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6>Nombre d'approvisionnements</h6>
+                    <h4 class="text-success fw-bold">{{ approvisionnements|length }}</h4>
+                    <small class="text-muted">Période : {{ periode }}</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6>Fournisseur principal</h6>
+                    <h4 class="fw-bold text-info">{{ fournisseurPrincipal.nom }}</h4>
+                    <small class="text-muted">
+                        {{ fournisseurPrincipal.montant|number_format(0, ' ', ' ') }} FCFA
+                        ({{ fournisseurPrincipal.pourcentage }}%)
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
