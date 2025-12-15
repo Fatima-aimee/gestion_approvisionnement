@@ -40,29 +40,32 @@
                         <i class="bi bi-funnel"></i> Filtrer
                     </button>
                 </div>
-                <div class="col-md-2 d-flex flex-row">
-                    <label class="form-label mb-1">Du</label>
-                    <input type="date" name="date_debut" class="form-control">
+                <div class="row g-3 align-items-center">
+                    <div class="col-auto d-flex align-items-center">
+                        <label for="dateDebut" class="col-form-label me-2">Du</label>
+                        <input type="date" id="dateDebut" name="date_debut" class="form-control">
+                    </div>
+
+                    <div class="col-auto d-flex align-items-center">
+                        <label for="dateFin" class="col-form-label me-2">Au</label>
+                        <input type="date" id="dateFin" name="date_fin" class="form-control">
+                    </div>
+
+                    <div class="col-auto d-flex align-items-center">
+                        <label for="fournisseur" class="col-form-label me-2">Date</label>
+                        <select id="fournisseur" name="fournisseur" class="form-select">
+                            <option value="">Récent → Ancien</option>
+                            <option value="">Ancien → Récent</option>
+                        </select>
+                    </div>
+
+                    <div class="col-auto d-grid">
+                        <a href="{{ path('approvisionnement_index') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-counterclockwise"></i> Réinitialiser
+                        </a>
+                    </div>
                 </div>
 
-                <div class="col-md-2 d-flex flex-row">
-                    <label class="form-label mb-1">Au</label>
-                    <input type="date" name="date_fin" class="form-control">
-                </div>
-
-                <div class="col-md-3 d-flex flex-row">
-                <label class="form-label mb-1">Date</label>
-                <select name="" class="form-select">
-                    <option value="">Récent → Ancien</option>
-                    <option value="">Ancien → Récent</option>
-                </select>
-            </div>
-              <div class="col-md-2 d-flex flex-column">
-                <a href="{{ path('approvisionnement_index') }}"
-                   class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-counterclockwise"></i> Réinitialiser
-                </a>
-            </div>   
             </form>
         </div>
     </div>
